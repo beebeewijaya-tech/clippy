@@ -6,9 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MainScreen: View {
-    @State var clipboardViewModel: ClipboardViewModel = ClipboardViewModel()
+    // MARK: - Environment
+    @Environment(ClipboardViewModel.self) private var clipboardViewModel
+    @Environment(\.modelContext) private var modelContext
+    
+    
+    // MARK: - Query
+    @Query(sort: \ClipboardModel.created, order: .reverse) private var clipboardList: [ClipboardModel]
     
     var body: some View {
         VStack {
@@ -22,20 +29,28 @@ struct MainScreen: View {
                 .padding(.bottom, 12)
             
             ScrollView {
-                ForEach(clipboardViewModel.clipboards.indices, id: \.self) { id in
-                    ClipItem(label: clipboardViewModel.clipboards[id]) {
-                        clipboardViewModel.copyText(at: id)
+                ForEach(clipboardList.indices, id: \.self) { id in
+                    ClipItem(clipboard: clipboardList[id]) {
+                        clipboardViewModel.copyText(at: id, clipboardList)
                     } onDelete: {
-                        clipboardViewModel.deleteClipboard(at: id)
+                        clipboardViewModel.deleteClipboard(at: id, clipboardList)
                     }
+                    .padding(.bottom, 8)
                 }
             }
         }
         .padding()
         .frame(width: 300, height: 500)
+        .onAppear {
+            
+        }
     }
 }
 
 #Preview {
+    let container = try! ModelContainer(for: ClipboardModel.self)
+    
     MainScreen()
+        .environment(ClipboardViewModel(modelContext: container.mainContext))
+        .modelContainer(container)
 }
