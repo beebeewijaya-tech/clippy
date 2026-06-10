@@ -8,13 +8,7 @@
 import SwiftUI
 
 struct MainScreen: View {
-    private var clipped = [
-        "Hello World",
-        "@user",
-        "https://google.com",
-        "1234567890",
-        "+628123456789"
-    ]
+    @State var clipboardViewModel: ClipboardViewModel = ClipboardViewModel()
     
     var body: some View {
         VStack {
@@ -28,13 +22,12 @@ struct MainScreen: View {
                 .padding(.bottom, 12)
             
             ScrollView {
-                ForEach(clipped.indices, id: \.self) { id in
-                    ClipItem(label: clipped[id]) {
-                        
+                ForEach(clipboardViewModel.clipboards.indices, id: \.self) { id in
+                    ClipItem(label: clipboardViewModel.clipboards[id]) {
+                        clipboardViewModel.copyText(at: id)
                     } onDelete: {
-                        
+                        clipboardViewModel.deleteClipboard(at: id)
                     }
-
                 }
             }
         }
