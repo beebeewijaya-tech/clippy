@@ -9,16 +9,26 @@ import SwiftUI
 
 
 struct ClipItem: View {
-    var label: String
+    var clipboard: ClipboardModel
     var onCopy: () -> Void
     var onDelete: () -> Void
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(label)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
+                VStack {
+                    Text(clipboard.text)
+                        .font(.body)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .multilineTextAlignment(.leading)
+                        .padding(.bottom, 8)
+                    
+                    Text(clipboard.created, format: .dateTime)
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .multilineTextAlignment(.leading)
+                }
                 
                 HStack {
                     Button {

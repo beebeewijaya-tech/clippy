@@ -7,17 +7,17 @@
 
 import SwiftUI
 import AppKit
-
+import SwiftData
 
 @Observable
 @MainActor
 final class ClipboardViewModel {
-    var clipboards: [String] = []
-    
     private var lastChangedCount = NSPasteboard.general.changeCount
     private var monitoringTask: Task<Void, Never>?
+    var modelContext: ModelContext
     
-    init() {
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
         startMonitoring()
     }
     
@@ -30,7 +30,8 @@ final class ClipboardViewModel {
                 if current != self.lastChangedCount {
                     self.lastChangedCount = current
                     if let text = NSPasteboard.general.string(forType: .string) {
-                        self.clipboards.insert(text.trimmingCharacters(in: .whitespaces), at: 0)
+                        self.modelContext.insert(ClipboardModel(text: text.trimmingCharacters(in: .whitespaces)))
+                        try? modelContext.save()
                     }
                 }
             }
@@ -43,22 +44,21 @@ final class ClipboardViewModel {
         monitoringTask = nil
     }
     
-    func deleteClipboard(at index: Int) {
-        let copy = clipboards[index]
-        
+    func deleteClipboard(at index: Int, _ clipboardList: [ClipboardModel]) {
+        let copy = clipboardList[index]
         if let text = NSPasteboard.general.string(forType: .string) {
-            if text == copy {
+            if text == copy.text {
                 NSPasteboard.general.clearContents()
             }
         }
-        
-        clipboards.remove(at: index)
+        modelContext.delete(copy)
+        try? modelContext.save()
     }
     
-    func copyText(at index: Int) {
-        let copy = clipboards[index]
+    func copyText(at index: Int, _ clipboardList: [ClipboardModel]) {
+        let copy = clipboardList[index]
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.setString(copy, forType: .string)
+        pasteboard.setString(copy.text, forType: .string)
     }
 }
