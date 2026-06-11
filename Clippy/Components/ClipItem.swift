@@ -51,6 +51,13 @@ struct ClipItem: View {
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .glassEffect(in: .rect(cornerRadius: 8))
+        .background {
+            if #available(macOS 26, *) {
+                Color.clear.glassEffect(in: .rect(cornerRadius: 12))
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+            }
+        }
     }
 }
