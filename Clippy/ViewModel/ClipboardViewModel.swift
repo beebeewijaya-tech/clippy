@@ -19,6 +19,7 @@ final class ClipboardViewModel {
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         startMonitoring()
+        startCleaning()
     }
     
     func startMonitoring() {
@@ -60,5 +61,30 @@ final class ClipboardViewModel {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(copy.text, forType: .string)
+    }
+    
+    
+    func clearExpiredClipboard() {
+        let cutoff = Date.now.addingTimeInterval(-(48 * 60 * 60))
+        let descriptor = FetchDescriptor<ClipboardModel>(
+            predicate: #Predicate { $0.created < cutoff }
+        )
+        
+        if let expired = try? modelContext.fetch(descriptor) {
+            expired.forEach {
+                modelContext.delete($0)
+            }
+            
+            try? modelContext.save()
+        }
+    }
+    
+    func startCleaning() {
+        Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(0.5))
+                clearExpiredClipboard()
+            }
+        }
     }
 }

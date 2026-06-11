@@ -19,11 +19,17 @@ struct ClippyApp: App {
     }
     
     var body: some Scene {
-        MenuBarExtra("Clippy", systemImage: "clipboard.fill") {
+        WindowGroup(id: "main") {
             MainScreen()
+                .environment(clipboardViewModel)
+                .modelContainer(container)
         }
-        .environment(clipboardViewModel)
-        .modelContainer(container)
+        
+        MenuBarExtra("Clippy", systemImage: "clipboard.fill") {
+            MenuBarScreen()
+                .environment(clipboardViewModel)
+                .modelContainer(container)
+        }
         .menuBarExtraStyle(.window)
     }
 }
