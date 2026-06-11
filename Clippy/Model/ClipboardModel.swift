@@ -12,9 +12,11 @@ import SwiftData
 class ClipboardModel {
     var text: String
     var created: Date
+    var isPin: Bool
     
-    init(text: String) {
+    init(text: String, isPin: Bool) {
         self.text = text
         self.created = .now
+        self.isPin = isPin
     }
 }
