@@ -41,9 +41,6 @@ struct MainScreen: View {
         }
         .padding()
         .frame(width: 300, height: 500)
-        .onAppear {
-            
-        }
     }
 }
 
