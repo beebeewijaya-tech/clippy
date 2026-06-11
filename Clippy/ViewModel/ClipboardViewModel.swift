@@ -31,7 +31,7 @@ final class ClipboardViewModel {
                 if current != self.lastChangedCount {
                     self.lastChangedCount = current
                     if let text = NSPasteboard.general.string(forType: .string) {
-                        self.modelContext.insert(ClipboardModel(text: text.trimmingCharacters(in: .whitespaces)))
+                        self.modelContext.insert(ClipboardModel(text: text.trimmingCharacters(in: .whitespaces), isPin: false))
                         try? modelContext.save()
                     }
                 }
@@ -86,5 +86,11 @@ final class ClipboardViewModel {
                 clearExpiredClipboard()
             }
         }
+    }
+    
+    func pinClipboard(at index: Int, _ clipboardList: [ClipboardModel]) {
+        let copy = clipboardList[index]
+        copy.isPin.toggle()
+        try? modelContext.save()
     }
 }

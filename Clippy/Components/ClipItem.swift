@@ -12,16 +12,29 @@ struct ClipItem: View {
     var clipboard: ClipboardModel
     var onCopy: () -> Void
     var onDelete: () -> Void
+    var onPin: () -> Void
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
+            HStack(alignment: .top) {
+                Button {
+                    onPin()
+                } label: {
+                    Image(systemName: clipboard.isPin ? "pin.fill" : "pin")
+                        .font(.caption)
+                        .foregroundStyle(clipboard.isPin ? .black : .white)
+                        .bold()
+                }
+                .background(clipboard.isPin ? Color.white : .clear)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .padding(.trailing, 8)
+                
                 VStack {
                     Text(clipboard.text)
                         .font(.body)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .multilineTextAlignment(.leading)
-                        .padding(.bottom, 8)
+                        .padding(.bottom, 4)
                     
                     Text(clipboard.created, format: .dateTime)
                         .font(.caption)
@@ -29,6 +42,7 @@ struct ClipItem: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .multilineTextAlignment(.leading)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 HStack {
                     Button {
