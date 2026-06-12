@@ -30,6 +30,10 @@ struct MainScreen: View {
                 .font(.caption)
                 .foregroundStyle(.white)
                 .padding(.bottom, 12)
+            Text("MAX ( 100 records ) - Omitting old ones")
+                .font(.caption)
+                .foregroundStyle(.white)
+                .padding(.bottom, 12)
             
             ScrollView {
                 ForEach(sortedClipboard.indices, id: \.self) { id in
