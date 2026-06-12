@@ -32,6 +32,13 @@ final class ClipboardViewModel {
                     self.lastChangedCount = current
                     if let text = NSPasteboard.general.string(forType: .string) {
                         self.modelContext.insert(ClipboardModel(text: text.trimmingCharacters(in: .whitespaces), isPin: false))
+                        let descriptor = FetchDescriptor<ClipboardModel>(
+                            predicate: #Predicate { !$0.isPin },
+                            sortBy: [SortDescriptor(\.created, order: .reverse)]
+                        )
+                        if let all = try? modelContext.fetch(descriptor), all.count > 150 {
+                            all.suffix(from: 150).forEach { modelContext.delete($0) }
+                        }
                         try? modelContext.save()
                     }
                 }
@@ -65,7 +72,7 @@ final class ClipboardViewModel {
     
     
     func clearExpiredClipboard() {
-        let cutoff = Date.now.addingTimeInterval(-(48 * 60 * 60))
+        let cutoff = Date.now.addingTimeInterval(-(24 * 60 * 60))
         let descriptor = FetchDescriptor<ClipboardModel>(
             predicate: #Predicate { $0.created < cutoff }
         )
@@ -82,7 +89,7 @@ final class ClipboardViewModel {
     func startCleaning() {
         Task {
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(0.5))
+                try? await Task.sleep(for: .seconds(3600))
                 clearExpiredClipboard()
             }
         }
