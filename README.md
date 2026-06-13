@@ -26,7 +26,7 @@ Click the icon to browse your history, re-copy an item, or clear what you don't 
 
 | Clippy |
 |:------:|
-| <img src="./docs/clippy.png" width="500"/> |
+| <img src="./docs/clippy-menu.png" width="500"/> |
 
 ---
 
